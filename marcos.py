@@ -1,0 +1,3 @@
+STICK = 0
+HIT = 1
+TERMINAL = -1
