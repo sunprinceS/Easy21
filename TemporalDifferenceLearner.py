@@ -16,7 +16,7 @@ import Environment
 from marcos import *
 from Agent import Agent
 
-MAX_ITER = 33000
+MAX_ITER = 100000
 N0 = 100
 
 class TemporalDifferenceLearner(Agent):
@@ -30,6 +30,9 @@ class TemporalDifferenceLearner(Agent):
             self.E = np.zeros(self.qvalue_table.shape)
 
         self.lamda = lamda
+
+    def resetE(self):
+        self.E = np.zeros(self.E.shape)
 
     def learn(self,init_state):
         if self.approx:
@@ -66,6 +69,7 @@ class TemporalDifferenceLearner(Agent):
             if next_state == TERMINAL:
                 delta = reward - self.qvalue_table[cur_idx]
                 self.qvalue_table[cur_idx] += alpha_t*delta*self.E[cur_idx]
+                self.E *= self.lamda
                 break
             else:
                 self.Ns[next_state] += 1
@@ -96,6 +100,7 @@ class TemporalDifferenceLearner(Agent):
             if next_state == TERMINAL:
                 delta = reward - cur_approx_q
                 self.w += alpha * delta * self.E
+                self.E *= self.lamda
                 break
             else:
                 next_action = super(TemporalDifferenceLearner,self).eps_greedy(next_state,eps)
@@ -121,20 +126,21 @@ if __name__ == "__main__":
                 sys.stdout.write('\rEpisode {}'.format(episode+1))
                 init_state = Environment.init()
                 TD_learner.learn(init_state)
-                # if lamda == .0 or lamda == 1.0:
-                    # TD_learner.build_q()
-                    # mses.append(TD_learner.qvalue_mse(opt_q))
+                TD_learner.resetE()
+                if lamda == .0 or lamda == 1.0:
+                    TD_learner.build_q()
+                    mses.append(TD_learner.qvalue_mse(opt_q))
             TD_learner.build_q()
             print(" MSE error of Q value= {} under {}".format(TD_learner.qvalue_mse(opt_q),lamda))
 
-            # TD_learner.show_value()
+            TD_learner.show_value()
 
             # TD_learner.show_policy()
-            # if lamda == .0 or lamda == 1.0:
-                # x = range(0,MAX_ITER)
-                # plt.xlabel("episode number")
-                # plt.xlim([0, MAX_ITER])
-                # plt.xticks(range(0, MAX_ITER + 1,MAX_ITER/10))
-                # plt.ylabel("Mean-Squared Error")
-                # plt.plot(x, mses)
-                # plt.show()
+            if lamda == .0 or lamda == 1.0:
+                x = range(0,MAX_ITER)
+                plt.xlabel("episode number")
+                plt.xlim([0, MAX_ITER])
+                plt.xticks(range(0, MAX_ITER + 1,MAX_ITER/10))
+                plt.ylabel("Mean-Squared Error")
+                plt.plot(x, mses)
+                plt.show()
