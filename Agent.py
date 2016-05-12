@@ -20,10 +20,11 @@ from marcos import *
 class Agent(object):
     def __init__(self,N0,approx=False):
         self.qvalue_table = np.zeros((10,21,2))
+        self.approx = approx
 
         #for linear approximation
-        if approx:
-            self.w = np.zeros(3*6*2)
+        if self.approx:
+            self.w = np.random.randn(3*6*2)
             self.d_boundary = [[0,3],[3,6],[6,9]]
             self.p_boundary = [[0,5],[3,8],[6,11],[9,14],[12,17],[15,20]]
         else:
@@ -59,7 +60,15 @@ class Agent(object):
         if random.uniform(0,1) <= eps:
             return random.randint(0,1)
         else:
-            return np.argmax(self.qvalue_table,axis=2)[(state)]
+            if self.approx:
+                if np.dot(self.w,self.get_feat(state,HIT)) > \
+                        np.dot(self.w,self.get_feat(state,STICK)):
+                    return HIT
+                else:
+                    return STICK
+
+            else:
+                return np.argmax(self.qvalue_table,axis=2)[(state)]
 
     def show_value(self):
 
@@ -81,5 +90,18 @@ class Agent(object):
         ax.set_zlim(-1, 1)
         ax.zaxis.set_major_locator(LinearLocator(10))
         fig.colorbar(surf, shrink=0.5, aspect=5)
-        plt.title('Q value')
+        plt.title('V*(state)')
+        plt.show()
+
+    def show_policy(self):
+
+        # plot Policy pi
+        fig = plt.figure(2)
+        X = np.arange(1, 11)
+        Y = np.arange(1, 22)
+        X, Y = np.meshgrid(X, Y)
+        pi = np.argmax(self.qvalue_table, axis=2)
+        CS = plt.contourf(X, Y, pi.T, [0, 0.5, 1], cmap=cm.bone, origin='lower')
+        cbar = plt.colorbar(CS)
+        plt.title('Policy')
         plt.show()

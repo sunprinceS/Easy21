@@ -16,7 +16,7 @@ from marcos import *
 from Agent import Agent
 
 
-MAX_ITER = 100000
+MAX_ITER = 10000
 
 class MonteCarloLearner(Agent):
     def __init__(self,N0):

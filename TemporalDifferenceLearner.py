@@ -16,7 +16,7 @@ import Environment
 from marcos import *
 from Agent import Agent
 
-MAX_ITER = 10000
+MAX_ITER = 33000
 N0 = 100
 
 class TemporalDifferenceLearner(Agent):
@@ -95,20 +95,13 @@ class TemporalDifferenceLearner(Agent):
 
             if next_state == TERMINAL:
                 delta = reward - cur_approx_q
-                # print("WWW")
-                # print(self.w)
-                # print(delta)
-                # print(approx_x)
-                self.w[approx_x == 1] += alpha * delta * self.E[approx_x == 1]
-                # print(self.w)
-                # print("EEE")
+                self.w += alpha * delta * self.E
                 break
             else:
                 next_action = super(TemporalDifferenceLearner,self).eps_greedy(next_state,eps)
-                next_approx_x = self.get_feat(next_state,next_action)
-                next_approx_q = np.dot(self.w,next_approx_x)
+                next_approx_q = np.dot(self.w,self.get_feat(next_state,next_action))
                 delta = reward + (next_approx_q - cur_approx_q)
-                self.w[approx_x == 1] += alpha * delta * self.E[approx_x == 1]
+                self.w += alpha * delta * self.E
                 self.E *= self.lamda
                 cur_state,cur_action = next_state,next_action
 
@@ -117,8 +110,9 @@ if __name__ == "__main__":
 
     with open("MC_qtable/episode{}".format(sys.argv[1])) as q_file:
         opt_q = pickle.load(q_file)
-        # lamdas = 0.1 * np.array(range(11))
-        lamdas = [0]
+        lamdas = 0.1 * np.array(range(11))
+        # lamdas = [0,1]
+        # lamdas = 0.1 * np.array(range(1,10))
         for lamda in lamdas:
             mses = []
             TD_learner = TemporalDifferenceLearner(lamda,N0,approx)
@@ -127,20 +121,20 @@ if __name__ == "__main__":
                 sys.stdout.write('\rEpisode {}'.format(episode+1))
                 init_state = Environment.init()
                 TD_learner.learn(init_state)
-                if lamda == .0 or lamda == 1.0:
-                    TD_learner.build_q()
-                    mses.append(TD_learner.qvalue_mse(opt_q))
+                # if lamda == .0 or lamda == 1.0:
+                    # TD_learner.build_q()
+                    # mses.append(TD_learner.qvalue_mse(opt_q))
             TD_learner.build_q()
             print(" MSE error of Q value= {} under {}".format(TD_learner.qvalue_mse(opt_q),lamda))
 
+            # TD_learner.show_value()
 
-            TD_learner.show_value()
-            if lamda == .0 or lamda == 1.0:
-                x = range(0,MAX_ITER)
-                plt.title('Learning curve of MSE under lambda {} '.format(lamda))
-                plt.xlabel("episode number")
-                plt.xlim([0, MAX_ITER])
-                plt.xticks(range(0, MAX_ITER + 1,MAX_ITER/10))
-                plt.ylabel("Mean-Squared Error")
-                plt.plot(x, mses)
-                plt.show()
+            # TD_learner.show_policy()
+            # if lamda == .0 or lamda == 1.0:
+                # x = range(0,MAX_ITER)
+                # plt.xlabel("episode number")
+                # plt.xlim([0, MAX_ITER])
+                # plt.xticks(range(0, MAX_ITER + 1,MAX_ITER/10))
+                # plt.ylabel("Mean-Squared Error")
+                # plt.plot(x, mses)
+                # plt.show()
