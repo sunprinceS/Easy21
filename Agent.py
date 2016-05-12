@@ -15,16 +15,40 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
+from marcos import *
 
 class Agent(object):
-    def __init__(self,N0):
+    def __init__(self,N0,approx=False):
         self.qvalue_table = np.zeros((10,21,2))
-        self.N0 = N0
-        self.Ns = np.zeros((10,21))
-        self.Nsa = np.zeros(self.qvalue_table.shape)
+
+        #for linear approximation
+        if approx:
+            self.w = np.zeros(3*6*2)
+            self.d_boundary = [[0,3],[3,6],[6,9]]
+            self.p_boundary = [[0,5],[3,8],[6,11],[9,14],[12,17],[15,20]]
+        else:
+            self.N0 = N0
+            self.Ns = np.zeros((10,21))
+            self.Nsa = np.zeros(self.qvalue_table.shape)
 
     def get_q(self):
         return self.qvalue_table
+
+    def get_feat(self,state,action):
+        feat=[]
+        dealer_sum,player_sum = state
+        for d in self.d_boundary:
+            for p in self.p_boundary:
+                if (p[0] <= player_sum <= p[1]) and (d[0] <= dealer_sum <= d[1]):
+                    feat.append(1)
+                else:
+                    feat.append(0)
+
+        if action == HIT:
+            feat = feat + [0]*18
+        else:
+            feat = [0]*18 + feat
+        return np.array(feat)
 
     def qvalue_mse(self,optimal_qvalue_table):
         err_table = optimal_qvalue_table - self.qvalue_table

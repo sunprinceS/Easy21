@@ -16,15 +16,35 @@ import Environment
 from marcos import *
 from Agent import Agent
 
-MAX_ITER = 100000
+MAX_ITER = 10000
 N0 = 100
 
 class TemporalDifferenceLearner(Agent):
-    def __init__(self,lamda,N0):
-        super(TemporalDifferenceLearner,self).__init__(N0)
-        self.E = np.zeros(self.qvalue_table.shape)
+    def __init__(self,lamda,N0,approx):
+        super(TemporalDifferenceLearner,self).__init__(N0,approx)
+        self.approx = approx
+
+        if self.approx:
+            self.E = np.zeros(self.w.shape)
+        else:
+            self.E = np.zeros(self.qvalue_table.shape)
+
         self.lamda = lamda
 
+    def learn(self,init_state):
+        if self.approx:
+            return self.lstd(init_state)
+        else:
+            return self.sarsa(init_state)
+
+    def build_q(self):
+        if self.approx:
+            for i in range(10):
+                for j in range(21):
+                    for k in range(2):
+                        self.qvalue_table[i][j][k] = np.dot(self.w,self.get_feat((i,j),k))
+        else:
+            pass
     def sarsa(self,init_state):
         """
         Backward Sarsa
@@ -56,29 +76,68 @@ class TemporalDifferenceLearner(Agent):
                 self.E *= self.lamda
                 cur_state,cur_action = next_state,next_action
 
+    def lstd(self,init_state):
+        """
+        Linear Least Squares Prediction (v^{pi}_t use G^{lamda}_t) to computer w
+        """
+        eps = 0.05
+        alpha = 0.01
+        cur_state = init_state
+        cur_action = super(TemporalDifferenceLearner,self).eps_greedy(cur_state,eps)
+        reward = 0
+        approx_x = self.get_feat(cur_state,cur_action)
+        cur_approx_q = np.dot(self.w,approx_x)
+
+        while True:
+            self.E[approx_x == 1] += 1
+            next_state,reward = Environment.step(cur_state,cur_action)
+
+            if next_state == TERMINAL:
+                delta = reward - cur_approx_q
+                # print("WWW")
+                print(self.w)
+                # print(delta)
+                # print(approx_x)
+                self.w[approx_x == 1] += alpha * delta * self.E[approx_x == 1]
+                # print(self.w)
+                # print("EEE")
+                break
+            else:
+                next_action = super(TemporalDifferenceLearner,self).eps_greedy(next_state,eps)
+                next_approx_x = self.get_feat(next_state,next_action)
+                next_approx_q = np.dot(self.w,next_approx_x)
+                delta = reward + (next_approx_q - cur_approx_q)
+                self.w[approx_x == 1] += alpha * delta * self.E[approx_x == 1]
+                self.E *= self.lamda
+                cur_state,cur_action = next_state,next_action
 
 if __name__ == "__main__":
+    approx = (len(sys.argv) == 3) and (sys.argv[2] == 'approx')
+
     with open("MC_qtable/episode{}".format(sys.argv[1])) as q_file:
         opt_q = pickle.load(q_file)
         lamdas = 0.1 * np.array(range(11))
         for lamda in lamdas:
             mses = []
-            TD_learner = TemporalDifferenceLearner(lamda,N0)
+            TD_learner = TemporalDifferenceLearner(lamda,N0,approx)
 
             for episode in range(MAX_ITER):
                 sys.stdout.write('\rEpisode {}'.format(episode+1))
                 init_state = Environment.init()
-                TD_learner.sarsa(init_state)
+                TD_learner.learn(init_state)
                 if lamda == .0 or lamda == 1.0:
                     mses.append(TD_learner.qvalue_mse(opt_q))
             print(" MSE error of Q value= {} under {}".format(TD_learner.qvalue_mse(opt_q),lamda))
+
+            TD_learner.build_q()
+
             TD_learner.show_value()
-            if lamda == .0 or lamda == 1.0:
-                x = range(0,MAX_ITER)
-                plt.title('Learning curve of MSE under lambda {} '.format(lamda))
-                plt.xlabel("episode number")
-                plt.xlim([0, MAX_ITER])
-                plt.xticks(range(0, MAX_ITER + 1,10000))
-                plt.ylabel("Mean-Squared Error")
-                plt.plot(x, mses)
-                plt.show()
+            # if lamda == .0 or lamda == 1.0:
+                # x = range(0,MAX_ITER)
+                # plt.title('Learning curve of MSE under lambda {} '.format(lamda))
+                # plt.xlabel("episode number")
+                # plt.xlim([0, MAX_ITER])
+                # plt.xticks(range(0, MAX_ITER + 1,MAX_ITER/10))
+                # plt.ylabel("Mean-Squared Error")
+                # plt.plot(x, mses)
+                # plt.show()
