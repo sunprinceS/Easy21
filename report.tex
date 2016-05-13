@@ -1,0 +1,452 @@
+\documentclass{beamer}
+
+\usepackage{fontspec}
+\usepackage{xeCJK}
+%\setsansfont{Helvetica Neue}
+\setCJKmainfont{DFFN_R3.TTC}
+%\setCJKfamilyfont{hksy}{Songti TC}
+%\setCJKfamilyfont{hkss}{Weibei TC}
+%\setCJKfamilyfont{lth}{Lantinghei TC}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\linespread{1.3}
+\allowdisplaybreaks
+
+\newcommand{\hkss}{\CJKfamily{hkss}}
+\newcommand{\hksy}{\CJKfamily{hksy}}
+\newcommand{\lth}{\CJKfamily{lth}}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{tikz}
+\usepackage{verbatim}
+
+\usetheme{EastLansing}
+\usetikzlibrary{positioning}
+\useinnertheme{rectangles}
+\usefonttheme{professionalfonts}
+
+\newcommand{\lw}{0.8mm}
+\setbeamercovered{transparent}
+
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{報告大綱}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\begin{document}
+
+\title[{Reinforcement Learning Assignment}]
+{\LARGE{\lth{Reinforcement Learning Assignment}}}
+\subtitle{\large{\textcolor[rgb]{0.00,0.50,1.00}{\hksy{Easy21}}}}
+\author[{徐瑞陽、方為}]
+{{徐瑞陽、方為}}
+\institute[]
+{{電機三}}
+\date
+{May 13, 2016}
+
+\begin{frame}
+\titlepage
+\end{frame}
+\begin{frame}
+\frametitle{報告大綱}
+\tableofcontents
+\end{frame}
+
+
+\section{Monte Carlo Control}
+\subsection{Value surface}
+\begin{frame}
+	\frametitle{Value Surface}
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.8\textwidth]{MC_1e3.png}
+	\end{figure}
+	\begin{itemize}
+	    \item Number of Episodes: $10^3$
+	    \item $N_0 = 100$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Value Surface}
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.8\textwidth]{MC_1e4.png}
+	\end{figure}
+	\begin{itemize}
+	    \item Number of Episodes: $10^4$
+	    \item $N_0 = 100$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Value Surface}
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.8\textwidth]{MC_1e6.png}
+	\end{figure}
+	\begin{itemize}
+	    \item Number of Episodes: $10^6$
+	    \item $N_0 = 100$
+	\end{itemize}
+\end{frame}
+
+%\subsection{Observation}
+%\begin{frame}
+   % \frametitle{Observation}
+   % \begin{itemize}
+     %  \item MC need more episodes to build Q value
+     %   \item Better convergence
+    %\end{itemize}
+%\end{frame}
+
+\section{Temporal Difference Control}
+\subsection{Mean-squared error (with MC $10^6$ episodes)}
+\begin{frame}
+    \frametitle{Mean Squared Error}
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.8\textwidth]{sarsa_mse.png}
+		\caption{Mean Squared Error over $\lambda$}
+	\end{figure}
+\end{frame}
+
+\subsection{Learning Curve}
+
+\begin{frame}
+    \frametitle{Learning Curve}
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.7\textwidth]{sarsa_mse_lamda0.png}
+		\caption{Mean Squared Error over $\lambda=0$}
+	\end{figure}
+\end{frame}
+\begin{frame}
+    \frametitle{Learning Curve}
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.7\textwidth]{sarsa_mse_lamda1.png}
+		\caption{Mean Squared Error over $\lambda=1$}
+	\end{figure}
+\end{frame}
+
+\subsection{Value Surface}
+\begin{frame}
+    \frametitle{Value Surface (Episodes=$10^3$)}
+    \begin{figure}[ht]
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0_1000.png}
+        {\caption*{$\lambda = 0.0$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.1_1000.png}
+        {\caption*{$\lambda = 0.1$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.2_1000.png}
+        {\caption*{$\lambda = 0.2$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.3_1000.png}
+        {\caption*{$\lambda = 0.3$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.4_1000.png}
+        {\caption*{$\lambda = 0.4$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.5_1000.png}
+        {\caption*{$\lambda = 0.5$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.6_1000.png}
+        {\caption*{$\lambda = 0.6$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.7_1000.png}
+        {\caption*{$\lambda = 0.7$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.8_1000.png}
+        {\caption*{$\lambda = 0.8$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.9_1000.png}
+        {\caption*{$\lambda = 0.9$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+
+        \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Value Surface (Episodes=$10^4$)}
+    \begin{figure}[ht]
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0_10000.png}
+        {\caption*{$\lambda = 0.0$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.1_10000.png}
+        {\caption*{$\lambda = 0.1$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.2_10000.png}
+        {\caption*{$\lambda = 0.2$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.3_10000.png}
+        {\caption*{$\lambda = 0.3$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.4_10000.png}
+        {\caption*{$\lambda = 0.4$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.5_10000.png}
+        {\caption*{$\lambda = 0.5$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.6_10000.png}
+        {\caption*{$\lambda = 0.6$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.7_10000.png}
+        {\caption*{$\lambda = 0.7$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.8_10000.png}
+        {\caption*{$\lambda = 0.8$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.9_10000.png}
+        {\caption*{$\lambda = 0.9$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+
+        \end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Linear Function Approximation}
+\subsection{Mean-squared error (with MC $10^6$ episodes)}
+\begin{frame}
+    \frametitle{Mean Squared Error}
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.8\textwidth]{lfa_mse.png}
+		\caption{Mean Squared Error over $\lambda$}
+	\end{figure}
+\end{frame}
+
+\subsection{Learning Curve}
+\begin{frame}
+    \frametitle{Learning Curve}
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.7\textwidth]{lfa_mse_lamda0.png}
+		\caption{Mean Squared Error over $\lambda=0$}
+	\end{figure}
+\end{frame}
+\begin{frame}
+    \frametitle{Learning Curve}
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.7\textwidth]{lfa_mse_lamda1.png}
+		\caption{Mean Squared Error over $\lambda=1$}
+	\end{figure}
+\end{frame}
+
+\subsection{Value Surface}
+\begin{frame}
+    \frametitle{Value Surface (Episodes=$10^3$)}
+    \begin{figure}[ht]
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0_1000.png}
+        {\caption*{$\lambda = 0.0$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.1_1000.png}
+        {\caption*{$\lambda = 0.1$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.2_1000.png}
+        {\caption*{$\lambda = 0.2$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.3_1000.png}
+        {\caption*{$\lambda = 0.3$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.4_1000.png}
+        {\caption*{$\lambda = 0.4$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.5_1000.png}
+        {\caption*{$\lambda = 0.5$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.6_1000.png}
+        {\caption*{$\lambda = 0.6$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.7_1000.png}
+        {\caption*{$\lambda = 0.7$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.8_1000.png}
+        {\caption*{$\lambda = 0.8$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.9_1000.png}
+        {\caption*{$\lambda = 0.9$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+
+        \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Value Surface (Episodes=$10^4$)}
+    \begin{figure}[ht]
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0_10000.png}
+        {\caption*{$\lambda = 0.0$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.1_10000.png}
+        {\caption*{$\lambda = 0.1$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.2_10000.png}
+        {\caption*{$\lambda = 0.2$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.3_10000.png}
+        {\caption*{$\lambda = 0.3$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.4_10000.png}
+        {\caption*{$\lambda = 0.4$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.5_10000.png}
+        {\caption*{$\lambda = 0.5$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.6_10000.png}
+        {\caption*{$\lambda = 0.6$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.7_10000.png}
+        {\caption*{$\lambda = 0.7$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.8_10000.png}
+        {\caption*{$\lambda = 0.8$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+        \hspace{0.02 \linewidth}
+        \begin{minipage}[b]{0.15\linewidth}
+        \centering
+        \includegraphics[scale=0.08]{TD_lamda0.9_10000.png}
+        {\caption*{$\lambda = 0.9$}}
+        \end{minipage}
+        \hspace{0.02 \linewidth}
+
+        \end{figure}
+\end{frame}
+\end{document} 
